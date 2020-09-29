@@ -1,4 +1,4 @@
-# Youtube-Dl-GUI by TheFallender
+# Youtube-DL-GUI by TheFallender
 Simple Youtube-DL GUI made with PySimpleGUI.
 
 ## Installation
