@@ -17,7 +17,7 @@ def get_download_path():
             location = winreg.QueryValueEx(key, downloads_guid)[0]
         return location
     else:
-        return os.path.join(os.path.expanduser('~'), 'downloads')
+        return os.path.join(os.path.expanduser('~'), 'Downloads')
 
 # First is only needed when Tinker has not been initialized
 def get_img_data(url, maxsize=(320, 180), first= False):
@@ -49,16 +49,15 @@ def get_img_data(url, maxsize=(320, 180), first= False):
 # Theme
 sg.theme("DarkAmber")
 
-# Variables
+# Components to get from the net
 imgOnline = sg.Text("Image not found, is there an active internet connection?", pad=(0, 30))
 iconToShow = None
 try:
-    imgOnline = sg.Image(data=get_img_data("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/YouTube_icon.png/800px-YouTube_icon.png", first = True), size = (320, 180), enable_events=True, key="-IMAGE_CLICK-", pad=(0, 30))
+    imgOnline = sg.Image(data=get_img_data("https://raw.githubusercontent.com/TheFallender/youtube-dl-gui/master/app.png", first = True), size = (320, 180), enable_events=True, key="-IMAGE_CLICK-", pad=(0, 30))
     iconToShow = get_img_data("https://raw.githubusercontent.com/TheFallender/youtube-dl-gui/master/app.ico", maxsize=(256,256), first=True)
 except:
     pass
-vidUrl = ""
-runWindow = True
+
 
 # Layout
 appLayout = [
@@ -108,6 +107,7 @@ appLayout = [
 window = sg.Window("Youtube DL GUI", appLayout, element_justification='c', icon=iconToShow)
 
 # Event Loop
+runWindow = True
 while runWindow:
     event, values = window.read()
 
@@ -130,14 +130,23 @@ while runWindow:
         window['-CB_ADV-'].Update(disabled=True)
 
     if event == "Download" and values['-URL_INPUT-'] != "":
+        # File path format for UNIX and Windows
+        cleanUrl = values['-URL_INPUT-'].replace("?list=WL", "")
+        filePath = "\"{0}{1}{2}\"".format(values['-PARAM_O-'], ("\\" if os.name == 'nt' else "/"), values['-PARAM_FN-'])
+
         # Format the command with the given input
-        command = "youtube-dl -f {0} -o \"{1}\\{2}\" {3} ".format(values['-PARAM_F-'], values['-PARAM_O-'], values['-PARAM_FN-'], values['-PARAM_E-'])
-        command += values['-URL_INPUT-']
+        command = "youtube-dl -f {0} -o {1} {2} ".format(values['-PARAM_F-'], filePath, values['-PARAM_E-'])
+        command += cleanUrl
         
         # Wether or not to show a Command Prompt
         if values['-CB_CMD-']:
-            cmdShow = 'cmd /c (echo Youtube-DL GUI by TheFallender: & echo Comand to run: & echo {0} & timeout 5 & echo. & {0})'.format(command)
-            subprocess.call(cmdShow)
+            cmdShow = ""
+            if os.name == 'nt':
+                cmdShow = 'cmd /c (echo Youtube-DL GUI by TheFallender: & echo Comand to run: & echo {0} & echo. & {0})'.format(command)
+                subprocess.call(cmdShow)
+            else:
+                cmdShow = 'bash -c "echo Youtube-DL GUI by TheFallender:; echo Comand to run:; echo {0}; echo ""; {0};"'.format(command.replace("\"", "\\\""))
+                os.system("gnome-terminal --wait -- {0}".format(cmdShow))
         else:
             subprocess.Popen(command, shell=True).communicate()
         

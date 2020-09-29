@@ -20,7 +20,7 @@ Note: On Linux it seems that ffmpeg doesn't support the latest Youtube Codec so 
 ## Build
 If you want to build it yourself, you'll have to use pyinstaller:
 ```
-    pyinstaller.exe --onefile --icon=app.ico Youtube-DL-GUI.pyw
+    pyinstaller --onefile --icon=app.ico Youtube-DL-GUI.pyw
 ```
 
 
