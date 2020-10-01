@@ -2,5 +2,6 @@
 /reqenv/
 /dist/
 /build/
+/releases/
 *.spec
 config.ini

@@ -91,6 +91,13 @@ def write_config(section, key, val):
     with open('config.ini', 'w') as configFile:
         config.write(configFile)
 
+def toggle_row (window, value):
+    if value:
+        window.unhide_row()
+    else:
+        window.hide_row()
+    window.Update(visible = value)
+
 # Theme
 sg.theme("DarkAmber")
 
@@ -108,39 +115,32 @@ advVisible = stringToBool(read_config("main", "adv"))
 
 # Layout
 appLayout = [
+    [sg.Text("  Youtube DL GUI by TheFallender  ", text_color="BLACK", background_color="WHITE", relief=sg.RELIEF_RAISED, border_width=5)],
+    [sg.Text("G̲i̲t̲H̲u̲b̲ R̲e̲po̲", background_color="WHITE", text_color="BLUE", relief=sg.RELIEF_GROOVE, border_width=4, enable_events=True, key="-GITHUB_CLICK-")],
+    
+    [imgOnline],
+    
     [
-        sg.Text("  Youtube DL GUI by TheFallender  ", text_color="BLACK", background_color="WHITE", relief=sg.RELIEF_RAISED, border_width=5),
-    ],
-    [
-        sg.Text("G̲i̲t̲H̲u̲b̲ R̲e̲po̲", background_color="WHITE", text_color="BLUE", relief=sg.RELIEF_GROOVE, border_width=4, enable_events=True, key="-GITHUB_CLICK-")
-    ],
-    [
-        imgOnline
-    ],
-    [
-        sg.Text("Youtube Link: "),
-        sg.InputText(size=(25,1), key = "-URL_INPUT-"),
+        sg.Text("Youtube Link: "), 
+        sg.InputText(size=(25,1), key = "-URL_INPUT-")
     ],
     [
         sg.Checkbox("Show Advanced", default = advVisible, key="-CB_ADV-", enable_events=True),
         sg.Checkbox("Show CMD", default = stringToBool(read_config("main", "cmd")), key="-CB_CMD-")
     ],
-    [
-        sg.Text("Format: ", key = "-INFO_F-", visible=advVisible),
-        sg.InputText(default_text=read_config("main", "format"), size=(35,1), key = "-PARAM_F-", visible=advVisible),
-    ],
-    [
-        sg.Text("Download Location: ", key = "-INFO_O-", visible=advVisible),
-        sg.InputText(default_text=read_config("main", "location"), size=(35,1), key = "-PARAM_O-", visible=advVisible),
-    ],
-    [
-        sg.Text("Filename format: ", key = "-INFO_FN-", visible=advVisible),
-        sg.InputText(default_text=read_config("main", "file"), size=(35,1), key = "-PARAM_FN-", visible=advVisible),
-    ],
-    [
-        sg.Text("Extra Parameters: ", key = "-INFO_E-", visible=advVisible),
-        sg.InputText(default_text=read_config("main", "extra"), size=(35,1), key = "-PARAM_E-", visible=advVisible),
-    ],
+
+    [sg.Text("Format: ", key = "-INFO_F-", visible=advVisible)],
+    [sg.InputText(default_text=read_config("main", "format"), size=(40,1), key = "-PARAM_F-", visible=advVisible)],
+
+    [sg.Text("Download Location: ", key = "-INFO_O-", visible=advVisible)],
+    [sg.InputText(default_text=read_config("main", "location"), size=(40,1), key = "-PARAM_O-", visible=advVisible)],
+
+    [sg.Text("Filename format: ", key = "-INFO_FN-", visible=advVisible)],
+    [sg.InputText(default_text=read_config("main", "file"), size=(40,1), key = "-PARAM_FN-", visible=advVisible)],
+
+    [sg.Text("Extra Parameters: ", key = "-INFO_E-", visible=advVisible)],
+    [sg.InputText(default_text=read_config("main", "extra"), size=(40,1), key = "-PARAM_E-", visible=advVisible)],
+
     [
         sg.Button('Download', key="-Download-", pad=(5,(20,10))),
         sg.Button('Save', key="-Save-", pad=(5,(20,10))),
@@ -162,15 +162,19 @@ while True:
         webbrowser.open('https://www.youtube.com')
 
     if event == "-CB_ADV-":
-        window['-INFO_F-'].Update(visible=True)
-        window['-PARAM_F-'].Update(visible=True)
-        window['-INFO_O-'].Update(visible=True)
-        window['-PARAM_O-'].Update(visible=True)
-        window['-INFO_FN-'].Update(visible=True)
-        window['-PARAM_FN-'].Update(visible=True)
-        window['-INFO_E-'].Update(visible=True)
-        window['-PARAM_E-'].Update(visible=True)
-        window['-CB_ADV-'].Update(disabled=True)
+        # Toggle the status of the windows
+        status = values['-CB_ADV-']
+        toggle_row(window['-INFO_F-'], status)
+        toggle_row(window['-PARAM_F-'], status)
+        toggle_row(window['-INFO_O-'], status)
+        toggle_row(window['-PARAM_O-'], status)
+        toggle_row(window['-INFO_FN-'], status)
+        toggle_row(window['-PARAM_FN-'], status)
+        toggle_row(window['-INFO_E-'], status)
+        toggle_row(window['-PARAM_E-'], status)
+        # Required to position the elements below
+        toggle_row(window['-Cancel-'], False)
+        toggle_row(window['-Cancel-'], True)
 
     if event == "-Download-" and values['-URL_INPUT-'] != "":
         # File path format for UNIX and Windows
