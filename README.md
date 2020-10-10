@@ -25,6 +25,3 @@ If you want to build it yourself, you'll have to use pyinstaller:
 ```
     pyinstaller --onefile --icon=app.ico Youtube-DL-GUI.pyw
 ```
-
-## TODO
-Save the latest settings if clicked on a button.
